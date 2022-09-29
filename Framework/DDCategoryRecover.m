@@ -33,7 +33,6 @@
     Dl_info info;
     dladdr(pc, &info);
     do {
-        Method m = NULL;
         int hit = 0;
         unsigned int count = 0;
         Method *list = class_copyMethodList(c, &count);
@@ -41,13 +40,14 @@
             if (method_getName(list[i]) == selector &&
                 (method_getImplementation(list[i]) == info.dli_saddr || hit > 0)) {
                 hit++;
-                IMP imp1 = method_getImplementation(list[i]);
                 if (hit > 1) {
                     recoverBlock(list[i]);
                 }
             }
         }
-        free(list);
+        if (NULL != list) {
+            free(list);
+        }
         if (hit > 0) {
             break;
         }
